@@ -1,4 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ReelComponent } from './components/reel.component';
 import { AudioService } from './services/audio.service';
 import { AIService } from './services/ai.service';
@@ -18,8 +19,8 @@ interface Particle {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ReelComponent],
-  templateUrl: './src/app.component.html',
+  imports: [CommonModule, ReelComponent],
+  templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(document:fullscreenchange)': 'onFullscreenChange()',
@@ -38,7 +39,7 @@ export class AppComponent {
   targetSum = signal<number>(0);
   numbers1 = signal<number[]>([]);
   numbers2 = signal<number[]>([]);
-  
+
   reel1Val = signal<number | null>(null);
   reel2Val = signal<number | null>(null);
   isWinner = signal(false);
@@ -69,9 +70,9 @@ export class AppComponent {
   onFullscreenChange() {
     const doc = document as any;
     const isFull = !!(
-      doc.fullscreenElement || 
-      doc.webkitFullscreenElement || 
-      doc.mozFullScreenElement || 
+      doc.fullscreenElement ||
+      doc.webkitFullscreenElement ||
+      doc.mozFullScreenElement ||
       doc.msFullscreenElement
     );
     this.isFullscreen.set(isFull);
@@ -115,6 +116,11 @@ export class AppComponent {
     this.aiMessage.set("SESSION_REBOOTED_LEVEL_01");
   }
 
+  returnToMenu() {
+    this.view.set('menu');
+    this.audioService.playClick();
+  }
+
   generateChallenge() {
     const level = this.currentLevel();
     const min = 10 + (level * 2);
@@ -136,7 +142,7 @@ export class AppComponent {
 
     this.numbers1.set(genSet(sol1));
     this.numbers2.set(genSet(sol2));
-    
+
     this.reel1Val.set(null);
     this.reel2Val.set(null);
     this.isWinner.set(false);
@@ -163,7 +169,7 @@ export class AppComponent {
 
       this.gameState.set('checking');
       await new Promise(r => setTimeout(r, 1200));
-      
+
       if (sum === target) {
         this.executeWinSequence(v1, v2, target);
       } else {
@@ -180,7 +186,7 @@ export class AppComponent {
     this.isWinner.set(true);
     this.audioService.playSuccess();
     this.winMessage.set('Sync successfully established');
-    
+
     const msg = await this.aiService.getFeedback('win', target, v1, v2);
     this.aiMessage.set(msg.toUpperCase());
 

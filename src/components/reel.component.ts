@@ -1,9 +1,10 @@
-import { Component, input, output, signal, computed, ElementRef, ViewChild } from '@angular/core';
+import { Component, input, output, signal, computed, ElementRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioService } from '../services/audio.service';
 
 @Component({
   selector: 'app-reel',
+  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="flex flex-col items-center">
@@ -28,8 +29,7 @@ import { AudioService } from '../services/audio.service';
         
         <!-- Laser di Allineamento Centrale (Mirino) -->
         <div class="absolute top-1/2 left-0 w-full h-20 -translate-y-1/2 z-35 pointer-events-none border-y border-orange-500/20 bg-orange-500/5 shadow-[0_0_50px_rgba(234,88,12,0.1)] transition-all duration-500"
-             [class.border-orange-500]="isWinning()"
-             [class.bg-orange-500/15]="isWinning()">
+             [ngClass]="{'border-orange-500': isWinning(), 'bg-orange-500/15': isWinning()}">
         </div>
 
         <!-- 3D Scrolling Drum -->
@@ -92,14 +92,15 @@ export class ReelComponent {
   isDragging = signal(false);
   currentRotation = signal(0);
   velocity = signal(0);
-  
+
+  private audioService = inject(AudioService);
   private lastY = 0;
   private startY = 0;
   private startRotation = 0;
   private lastTimestamp = 0;
-  
-  public readonly segmentCount = 12; 
-  public readonly angleStep = 30;    
+
+  public readonly segmentCount = 12;
+  public readonly angleStep = 30;
   public readonly radius = 120; // Aumentato raggio per miglior fit spaziale
 
   displayNumbers = computed(() => {
@@ -108,11 +109,9 @@ export class ReelComponent {
     return Array.from({ length: this.segmentCount }, (_, i) => r[i % r.length]);
   });
 
-  constructor(private audioService: AudioService) {}
-
   onDragStart(event: MouseEvent | TouchEvent) {
     if (this.isWinning()) return;
-    
+
     this.isDragging.set(true);
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     this.startY = clientY;
@@ -122,20 +121,20 @@ export class ReelComponent {
 
     const onMove = (e: MouseEvent | TouchEvent) => {
       if (!this.isDragging()) return;
-      
+
       const currentY = 'touches' in e ? e.touches[0].clientY : e.clientY;
       const now = performance.now();
       const dt = now - this.lastTimestamp;
       const dy = currentY - this.lastY;
-      
+
       if (dt > 0) {
         this.velocity.set(Math.abs(dy / dt));
       }
-      
+
       const deltaY = currentY - this.startY;
       const rotationDelta = -deltaY * 0.42; // Sensibilità calibrata
       this.currentRotation.set(this.startRotation + rotationDelta);
-      
+
       if (Math.abs(dy) > 15) {
         this.audioService.playClick();
       }
@@ -165,15 +164,15 @@ export class ReelComponent {
     const rotation = this.currentRotation();
     const snappedAngle = Math.round(rotation / this.angleStep) * this.angleStep;
     this.currentRotation.set(snappedAngle);
-    
+
     const index = (Math.round(-snappedAngle / this.angleStep) % this.segmentCount + this.segmentCount) % this.segmentCount;
-    
+
     setTimeout(() => {
-       this.audioService.playConfirm();
-       const r = this.range();
-       if (r.length > 0) {
-         this.onValueChange.emit(r[index % r.length]);
-       }
+      this.audioService.playConfirm();
+      const r = this.range();
+      if (r.length > 0) {
+        this.onValueChange.emit(r[index % r.length]);
+      }
     }, 150);
   }
 
@@ -195,17 +194,17 @@ export class ReelComponent {
   getFilter(dist: number) {
     const v = this.velocity();
     // Blur ultra-light come richiesto
-    const blurAmount = Math.min(v * 1.2, 1.4); 
-    
+    const blurAmount = Math.min(v * 1.2, 1.4);
+
     // Glow stratificato Arancio-Bianco
-    const glow = dist < 15 
-      ? (this.isWinning() 
-          ? 'drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #fb923c)' 
-          : 'drop-shadow(0 0 12px rgba(251,146,60,0.8)) drop-shadow(0 0 25px rgba(234,88,12,0.5))') 
+    const glow = dist < 15
+      ? (this.isWinning()
+        ? 'drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px #fb923c)'
+        : 'drop-shadow(0 0 12px rgba(251,146,60,0.8)) drop-shadow(0 0 25px rgba(234,88,12,0.5))')
       : 'none';
-    
+
     const blur = v > 0.08 ? `blur(${blurAmount}px)` : 'none';
-    
+
     return `${glow} ${blur}`;
   }
 }
