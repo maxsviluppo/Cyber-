@@ -143,8 +143,8 @@ export class AppComponent {
   }
 
   startGame() {
-    this.audioService.playIntro();
     this.audioService.stopHomeMusic();
+    this.audioService.playIntro();
     this.currentLevel.set(1);
     this.generateChallenge();
     this.view.set('playing');

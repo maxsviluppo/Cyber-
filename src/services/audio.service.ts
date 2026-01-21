@@ -174,24 +174,38 @@ export class AudioService {
   // --- Home Music ---
   private homeMusicSource: AudioBufferSourceNode | null = null;
   private homeMusicGain: GainNode | null = null;
+  private isLoadingHomeMusic = false;
+  private stopRequested = false;
 
   async startHomeMusic() {
-    if (this.isMuted || this.homeMusicSource) return;
+    if (this.isMuted || this.homeMusicSource || this.isLoadingHomeMusic) return;
+
+    this.isLoadingHomeMusic = true;
+    this.stopRequested = false;
+
     this.init();
-    if (!this.audioCtx) return;
+    if (!this.audioCtx) {
+      this.isLoadingHomeMusic = false;
+      return;
+    }
 
     try {
       const response = await fetch('home-music.m4a');
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const arrayBuffer = await response.arrayBuffer();
+
+      if (this.stopRequested) return; // Abort if stopped during fetch
+
       const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+
+      if (this.stopRequested) return; // Abort if stopped during decode
 
       this.homeMusicSource = this.audioCtx.createBufferSource();
       this.homeMusicSource.buffer = audioBuffer;
       this.homeMusicSource.loop = true;
 
       this.homeMusicGain = this.audioCtx.createGain();
-      this.homeMusicGain.gain.value = 0.45; // Ridotto volume del 5% (da 0.50)
+      this.homeMusicGain.gain.value = 0.45;
 
       this.homeMusicSource.connect(this.homeMusicGain);
       this.homeMusicGain.connect(this.audioCtx.destination);
@@ -201,10 +215,13 @@ export class AudioService {
     } catch (error) {
       console.error('Errore riproduzione home music (home-music.m4a):', error);
       this.homeMusicSource = null;
+    } finally {
+      this.isLoadingHomeMusic = false;
     }
   }
 
   stopHomeMusic() {
+    this.stopRequested = true;
     if (this.homeMusicSource) {
       try {
         this.homeMusicSource.stop();

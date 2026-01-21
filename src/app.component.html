@@ -91,8 +91,8 @@
       <div class="fixed inset-0 z-[100] bg-black flex items-center justify-center animate-in fade-in duration-500"
         [class.opacity-0]="isTransitioning()" [class.duration-1000]="isTransitioning()"
         [class.transition-opacity]="isTransitioning()">
-        <video class="w-full h-full object-contain" autoplay playsinline (ended)="onVideoEnded()"
-          (error)="onVideoError()">
+        <video class="w-[calc(100%+50px)] h-[calc(100%+50px)] max-w-none max-h-none object-contain scale-110" autoplay
+          playsinline muted preload="auto" (ended)="onVideoEnded()" (error)="onVideoError()">
           <source src="win-video.mp4" type="video/mp4">
         </video>
       </div>
