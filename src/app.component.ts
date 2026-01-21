@@ -236,6 +236,9 @@ export class AppComponent {
   onVideoEnded() {
     this.showEventVideo.set(false);
 
+    // Start fondo.wav immediately after video
+    this.audioService.startAmbientSounds();
+
     // Start Sync Phase
     this.showSyncMessage.set(true);
     this.audioService.playLinkSound();
@@ -255,9 +258,6 @@ export class AppComponent {
         // Progress Level
         this.currentLevel.update(l => l + 1);
         this.generateChallenge(); // This resets isWinner to false
-
-        // Resume Game Ambient
-        this.audioService.startAmbientSounds();
       }, 1000);
     }, 4000);
   }

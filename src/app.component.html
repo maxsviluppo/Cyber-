@@ -91,8 +91,8 @@
       <div class="fixed inset-0 z-[100] bg-black flex items-center justify-center animate-in fade-in duration-500"
         [class.opacity-0]="isTransitioning()" [class.duration-1000]="isTransitioning()"
         [class.transition-opacity]="isTransitioning()">
-        <video class="w-full h-full object-contain" autoplay playsinline poster="win-poster.png"
-          (ended)="onVideoEnded()" (error)="onVideoError()">
+        <video class="w-full h-full object-contain" autoplay playsinline (ended)="onVideoEnded()"
+          (error)="onVideoError()">
           <source src="win-video.mp4" type="video/mp4">
         </video>
       </div>
@@ -114,11 +114,11 @@
         <div
           class="relative z-10 flex flex-col items-center justify-center gap-6 md:gap-8 p-8 border-y-2 border-orange-500/30 bg-black/40 w-full backdrop-blur-xl">
           <h2
-            class="text-4xl sm:text-5xl md:text-7xl font-orbitron font-bold text-orange-500 animate-pulse drop-shadow-[0_0_30px_#f97316] tracking-tighter text-center">
+            class="text-3xl sm:text-4xl md:text-6xl font-orbitron font-bold text-orange-500 animate-pulse drop-shadow-[0_0_30px_#f97316] tracking-tighter text-center">
             SINCRONIZZAZIONE
           </h2>
           <h3
-            class="text-3xl sm:text-4xl md:text-6xl font-orbitron text-orange-300 tracking-[0.2em] md:tracking-[0.4em] drop-shadow-[0_0_15px_#fb923c]">
+            class="text-2xl sm:text-3xl md:text-5xl font-orbitron text-orange-300 tracking-[0.2em] md:tracking-[0.4em] drop-shadow-[0_0_15px_#fb923c]">
             LINK {{ currentLevel() < 10 ? '0' : '' }}{{ currentLevel() }} </h3>
 
               <div class="flex items-center gap-2 mt-4">
