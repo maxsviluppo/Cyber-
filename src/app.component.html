@@ -1,5 +1,5 @@
 <div
-  class="h-screen w-full relative flex flex-col items-center justify-center p-2 md:p-4 overflow-hidden font-rajdhani">
+  class="h-[100dvh] w-full relative flex flex-col items-center justify-center -translate-y-12 md:translate-y-0 p-2 md:p-4 overflow-hidden font-rajdhani">
 
   <!-- Neon Light from Above -->
   <div class="neon-light-above"></div>
@@ -32,20 +32,47 @@
           Link</span>
       </button>
 
-      <button (click)="toggleFullscreen()"
-        class="group flex items-center gap-3 px-6 py-2 border border-orange-950/30 rounded-full hover:bg-orange-500/5 transition-all touch-manipulation">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="text-orange-900 group-hover:text-orange-500">
-          <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-          <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-          <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-          <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-        </svg>
-        <span class="text-[10px] font-orbitron tracking-widest text-orange-900 group-hover:text-orange-500 uppercase">
-          {{ isFullscreen() ? 'Exit Fullscreen' : 'Enable Immersion' }}
-        </span>
-      </button>
+      <div class="flex items-center gap-3">
+        <!-- Audio Toggle Button -->
+        <button (click)="toggleAudio()" [title]="isMuted() ? 'Enable Audio' : 'Mute Audio'"
+          class="group flex items-center gap-2 px-4 py-2 border border-orange-950/30 rounded-full hover:bg-orange-500/5 transition-all touch-manipulation">
+          @if (isMuted()) {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="text-orange-900 group-hover:text-orange-500">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="text-orange-900 group-hover:text-orange-500">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          }
+          <span class="text-[10px] font-orbitron tracking-widest text-orange-900 group-hover:text-orange-500 uppercase">
+            {{ isMuted() ? 'Enable Sound' : 'Mute Sound' }}
+          </span>
+        </button>
+
+        <!-- Fullscreen Button -->
+        <button (click)="toggleFullscreen()"
+          class="group flex items-center gap-2 px-4 py-2 border border-orange-950/30 rounded-full hover:bg-orange-500/5 transition-all touch-manipulation">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="text-orange-900 group-hover:text-orange-500">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+            <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+            <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+            <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+          </svg>
+          <span class="text-[10px] font-orbitron tracking-widest text-orange-900 group-hover:text-orange-500 uppercase">
+            {{ isFullscreen() ? 'Exit Fullscreen' : 'Enable Immersion' }}
+          </span>
+        </button>
+      </div>
     </div>
   </main>
   } @else {
@@ -91,6 +118,27 @@
         </div>
 
         <div class="flex items-center gap-2">
+          <!-- Audio Toggle Button -->
+          <button (click)="toggleAudio()" [title]="isMuted() ? 'Enable Audio' : 'Mute Audio'"
+            class="w-8 h-8 flex items-center justify-center bg-orange-950/20 border border-orange-900/50 rounded-lg hover:border-orange-500 transition-all text-orange-900 hover:text-orange-400 group relative">
+            @if (isMuted()) {
+            <!-- Muted Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+            } @else {
+            <!-- Audio On Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            }
+          </button>
+
           <button (click)="toggleFullscreen()" title="Toggle Immersion"
             class="w-8 h-8 flex items-center justify-center bg-orange-950/20 border border-orange-900/50 rounded-lg hover:border-orange-500 transition-all text-orange-900 hover:text-orange-400 group relative">
             @if (isFullscreen()) {
@@ -158,9 +206,11 @@
       <!-- The Reels -->
       <div class="relative z-10 flex items-center justify-center gap-4 md:gap-8 mb-6"
         [class.led-glitching]="glitchingLed() === 'reel'">
-        <app-reel [range]="numbers1()" [isWinning]="isWinner()" (onValueChange)="onReelChange($event, 1)"></app-reel>
+        <app-reel [range]="numbers1()" [isWinning]="isWinner()" (onValueChange)="onReelChange($event, 1)"
+          [reelId]="1"></app-reel>
         <div class="text-4xl font-orbitron font-bold text-orange-900/30">+</div>
-        <app-reel [range]="numbers2()" [isWinning]="isWinner()" (onValueChange)="onReelChange($event, 2)"></app-reel>
+        <app-reel [range]="numbers2()" [isWinning]="isWinner()" (onValueChange)="onReelChange($event, 2)"
+          [reelId]="2"></app-reel>
       </div>
 
       <!-- DIAGNOSTIC DASHBOARD -->

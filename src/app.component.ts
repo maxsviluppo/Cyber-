@@ -45,6 +45,7 @@ export class AppComponent {
   isWinner = signal(false);
   aiMessage = signal("AWAITING_INPUT...");
   isFullscreen = signal(false);
+  isMuted = signal(true);
   winMessage = signal('');
 
   targetParticles = signal<Particle[]>(this.generateParticles(15));
@@ -53,6 +54,21 @@ export class AppComponent {
   constructor() {
     this.generateChallenge();
     this.startLedGlitches();
+    this.audioService.startHomeMusic();
+  }
+
+  toggleAudio() {
+    this.audioService.playButtonClick();
+    const muted = this.audioService.toggleMute();
+    this.isMuted.set(muted);
+
+    if (!muted) {
+      if (this.view() === 'menu') {
+        this.audioService.startHomeMusic();
+      } else {
+        this.audioService.startAmbientSounds();
+      }
+    }
   }
 
   private startLedGlitches() {
@@ -90,6 +106,7 @@ export class AppComponent {
   }
 
   async toggleFullscreen() {
+    this.audioService.playButtonClick();
     const doc = document as any;
     const docEl = document.documentElement as any;
 
@@ -113,21 +130,26 @@ export class AppComponent {
   }
 
   startGame() {
+    this.audioService.playIntro();
+    this.audioService.stopHomeMusic();
     this.currentLevel.set(1);
     this.generateChallenge();
     this.view.set('playing');
-    // this.audioService.startAmbientSounds(); // DISABLED - To re-enable later
+    this.audioService.startAmbientSounds(); // RE-ENABLED (controlled by service flag)
   }
 
   resetGame() {
+    this.audioService.playButtonClick();
     this.currentLevel.set(1);
     this.generateChallenge();
     this.aiMessage.set("SESSION_REBOOTED_LEVEL_01");
   }
 
   returnToMenu() {
+    this.audioService.playButtonClick();
     this.view.set('menu');
-    // this.audioService.stopAmbientSounds(); // DISABLED - To re-enable later
+    this.audioService.stopAmbientSounds(); // RE-ENABLED
+    this.audioService.startHomeMusic();
   }
 
   generateChallenge() {

@@ -83,6 +83,7 @@ import { AudioService } from '../services/audio.service';
   `]
 })
 export class ReelComponent {
+  reelId = input<number>(0);
   range = input<number[]>([]);
   isWinning = input<boolean>(false);
   onValueChange = output<number>();
@@ -111,6 +112,13 @@ export class ReelComponent {
 
   onDragStart(event: MouseEvent | TouchEvent) {
     if (this.isWinning()) return;
+
+    // Play specific reel sound
+    if (this.reelId() === 1) {
+      this.audioService.playLeftReelSpin();
+    } else if (this.reelId() === 2) {
+      this.audioService.playRightReelSpin();
+    }
 
     this.isDragging.set(true);
     const clientY = 'touches' in event ? event.touches[0].clientY : event.clientY;
@@ -164,7 +172,7 @@ export class ReelComponent {
     const index = (Math.round(-snappedAngle / this.angleStep) % this.segmentCount + this.segmentCount) % this.segmentCount;
 
     setTimeout(() => {
-      // this.audioService.playReelStop(); // DISABLED REEL SOUND
+      this.audioService.playReelStop(); // ENABLED CUSTOM WAV
       const r = this.range();
       if (r.length > 0) {
         this.onValueChange.emit(r[index % r.length]);
